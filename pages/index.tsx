@@ -1,6 +1,7 @@
 import Head from 'next/head'
 import Image from 'next/image'
 import styles from '../styles/Home.module.css'
+import tw from 'twin.macro';
 
 export default function Home() {
   return (
@@ -15,6 +16,9 @@ export default function Home() {
         <h1 className={styles.title}>
           Welcome to <a href="https://nextjs.org">Next.js!</a>
         </h1>
+
+          <div tw="flex flex-col justify-center h-full gap-y-5">
+          </div>
 
         <p className={styles.description}>
           Get started by editing{' '}
