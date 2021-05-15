@@ -9,8 +9,6 @@ interface State {
 }
 
 interface Props {
-  allowRange: boolean;
-  maxRangeLength: number;
   min: string;
   max: string;
   value: string;
@@ -63,6 +61,11 @@ export default class MonthSelector extends Component<Partial<Props>, State> {
 
     let ticking = false;
     this.containerEl.current?.addEventListener('scroll', (e) => {
+      if (this.preventScrollEvents) {
+        this.preventScrollEvents = false;
+        return;
+      }
+
       if (!ticking) {
         window.requestAnimationFrame(() => {
           if (this.containerEl.current)
@@ -113,18 +116,14 @@ export default class MonthSelector extends Component<Partial<Props>, State> {
   }
 
   handleScroll(scrollTop: number) {
-    if (this.preventScrollEvents) {
-      this.preventScrollEvents = false;
-      return;
-    }
     let center = this.state.years.length / 2;
     if (scrollTop < this.yearElHeight * (center - 1)) {
-      if (!this.props.min || this.state.years[0] - 1 >= +this.props.min.split('-')[0]) {
+      if (!this.min || this.state.years[0] - 1 >= this.min[0]) {
         let years = [this.state.years[0] - 1, ...this.state.years.slice(0, -1)]
         this.setState({ years });
       }
     } else if (scrollTop > this.yearElHeight * (center + 1)) {
-      if (!this.props.max || this.state.years[0] - 1 <= +this.props.max.split('-')[0]) {
+      if (!this.max || this.state.years[this.state.years.length - 1] + 1 <= this.max[0]) {
         let years = [...this.state.years.slice(1), this.state.years[this.state.years.length - 1] + 1];
         this.setState({ years });
       }
@@ -133,12 +132,12 @@ export default class MonthSelector extends Component<Partial<Props>, State> {
 
   handleNextMonth() {
     let nextScrollHeight = (Math.floor((this.containerEl.current?.scrollTop ?? 0) / this.yearElHeight) + 1) * this.yearElHeight;
-    this.containerEl.current?.scrollTo(0, nextScrollHeight + 46);
+    this.containerEl.current?.scrollTo(0, nextScrollHeight + 1);
   }
 
   handlePrevMonth() {
     let nextScrollHeight = (Math.floor((this.containerEl.current?.scrollTop ?? 0) / this.yearElHeight) - 1) * this.yearElHeight;
-    this.containerEl.current?.scrollTo(0, nextScrollHeight + 46);
+    this.containerEl.current?.scrollTo(0, nextScrollHeight);
   }
 
   render() {
@@ -171,7 +170,7 @@ export default class MonthSelector extends Component<Partial<Props>, State> {
             <div className="border-b border-gray-200 p-6 grid grid-cols-4 gap-2 mb-px">
               {months.map((month, index) => {
                 // console.log(this.min, year, index);
-                if (this.min && year <= this.min[0] && index <= this.min[1]) {
+                if ((this.min && year <= this.min[0] && index <= this.min[1]) || (this.max && year >= this.max[0] && index >= this.max[1])) {
                   return <span key={`${year}-${month}`} className="p-2 flex items-center justify-center uppercase text-sm text-gray-400">
                     {month}
                   </span>;
