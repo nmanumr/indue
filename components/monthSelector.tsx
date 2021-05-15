@@ -11,8 +11,11 @@ interface State {
 }
 
 interface Props {
+  /** in format YYYY-MM */
   min: string;
+  /** in format YYYY-MM */
   max: string;
+  /** in format YYYY-MM */
   value: string;
   onChange: (selection: string[]) => void;
 }
@@ -251,7 +254,7 @@ export default class MonthSelector extends Component<Partial<Props>, State> {
             <span className="z-20 sticky top-2 inline-block ml-11 pt-1.5 pb-1.5 text-sm font-medium text-gray-500">
               {year}
             </span>
-            
+
             <div className="border-b border-gray-200 p-6 grid grid-cols-4 gap-2 mb-px">
               {months.map((month, index) => {
                 if ((this.min && year <= this.min[0] && index <= this.min[1]) || (this.max && year >= this.max[0] && index >= this.max[1])) {
