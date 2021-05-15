@@ -17,12 +17,6 @@ interface Props {
   onChange: (selection: string[]) => void;
 }
 
-function range(min: number, max: number): number[] {
-  return Array(max - min + 1)
-    .fill(0)
-    .map((_, i) => i + min);
-}
-
 function yearsRange(YEARS_PAD: number, minYear: number, maxYear: number): number[] {
   let currentYear = new Date().getFullYear();
   let min = Math.max(currentYear - YEARS_PAD, minYear);
@@ -32,20 +26,32 @@ function yearsRange(YEARS_PAD: number, minYear: number, maxYear: number): number
     .map((_, i) => i + min);
 }
 
+// TODO: smooth scroll on year change
+
 export default class MonthSelector extends Component<Partial<Props>, State> {
   private yearElHeight: number = 0;
   private containerEl: RefObject<HTMLDivElement>;
   private preventScrollEvents = false;
   private sholdScrollToCurrentYear = false;
+
   private readonly YEARS_PAD = 5;
+  private readonly defaultYearsRange;
+  private readonly min?: [number, number] = undefined;
+  private readonly max?: [number, number] = undefined;
 
   constructor(props: Partial<Props>) {
     super(props);
 
     let currentYear = new Date().getFullYear();
     let currentMonth = new Date().getMonth();
+    let [minYear, minMonth] = this.props.min?.split('-').map(i => +i) ?? [-Infinity, -Infinity];
+    let [maxYear, maxMonth] = this.props.max?.split('-').map(i => +i) ?? [+Infinity, +Infinity];
 
-    let years = yearsRange(this.YEARS_PAD, +(this.props.min?.split('-')[0] ?? -Infinity), +(this.props.max?.split('-')[0] ?? +Infinity));
+    if (minYear !== -Infinity && minMonth !== -Infinity) this.min = [minYear, minMonth];
+    if (maxYear !== Infinity && maxMonth !== Infinity) this.max = [maxYear, maxMonth];
+
+    let years = yearsRange(this.YEARS_PAD, minYear, maxYear);
+    this.defaultYearsRange = years;
 
     this.state = { years, selected: [`${currentYear}-${currentMonth}`] };
     this.containerEl = createRef();
@@ -79,7 +85,7 @@ export default class MonthSelector extends Component<Partial<Props>, State> {
 
   scrollToCurrentYear() {
     let currentYear = new Date().getFullYear();
-    let minYear = Math.max(currentYear - this.YEARS_PAD, +(this.props.min?.split('-')[0] ?? -Infinity));
+    let minYear = this.defaultYearsRange[0];
     if (currentYear - minYear > 0) {
       this.containerEl.current?.scrollTo(0, this.yearElHeight * (currentYear - minYear));
     }
@@ -89,9 +95,9 @@ export default class MonthSelector extends Component<Partial<Props>, State> {
     let currentYear = new Date().getFullYear();
     let currentMonth = new Date().getMonth();
 
-    if (this.state.years[0] !== Math.max(currentYear - this.YEARS_PAD, +(this.props.min?.split('-')[0] ?? -Infinity))) {
+    if (this.state.years[0] !== this.defaultYearsRange[0]) {
       this.setState({
-        years: Array.from(Array(this.YEARS_PAD * 2 + 1).keys()).map(i => currentYear - this.YEARS_PAD + i),
+        years: this.defaultYearsRange,
         selected: [`${currentYear}-${currentMonth}`]
       });
     } else {
@@ -111,13 +117,14 @@ export default class MonthSelector extends Component<Partial<Props>, State> {
       this.preventScrollEvents = false;
       return;
     }
-    if (scrollTop < this.yearElHeight * (this.YEARS_PAD - 1)) {
-      if (!this.props.min || this.state.years[0] - 1 > +this.props.min.split('-')[0]) {
+    let center = this.state.years.length / 2;
+    if (scrollTop < this.yearElHeight * (center - 1)) {
+      if (!this.props.min || this.state.years[0] - 1 >= +this.props.min.split('-')[0]) {
         let years = [this.state.years[0] - 1, ...this.state.years.slice(0, -1)]
         this.setState({ years });
       }
-    } else if (scrollTop > this.yearElHeight * (this.YEARS_PAD + 2)) {
-      if (!this.props.max || this.state.years[0] - 1 < +this.props.max.split('-')[0]) {
+    } else if (scrollTop > this.yearElHeight * (center + 1)) {
+      if (!this.props.max || this.state.years[0] - 1 <= +this.props.max.split('-')[0]) {
         let years = [...this.state.years.slice(1), this.state.years[this.state.years.length - 1] + 1];
         this.setState({ years });
       }
@@ -163,6 +170,13 @@ export default class MonthSelector extends Component<Partial<Props>, State> {
             </span>
             <div className="border-b border-gray-200 p-6 grid grid-cols-4 gap-2 mb-px">
               {months.map((month, index) => {
+                // console.log(this.min, year, index);
+                if (this.min && year <= this.min[0] && index <= this.min[1]) {
+                  return <span key={`${year}-${month}`} className="p-2 flex items-center justify-center uppercase text-sm text-gray-400">
+                    {month}
+                  </span>;
+                }
+
                 return <button
                   key={`${year}-${month}`}
                   onClick={() => this.handleMonthSelection([index, year])}
