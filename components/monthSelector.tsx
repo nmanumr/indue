@@ -86,7 +86,7 @@ export default class MonthSelector extends Component<Partial<Props>, State> {
     this.yearElHeight = this.containerEl.current?.firstElementChild?.nextElementSibling?.clientHeight ?? 0;
     this.scrollToCurrentYear(false); // false to disable smooth scroll
 
-    // throlle scroll events to only animation frames
+    // thro scroll events to only animation frames
     let ticking = false;
     this.containerEl.current?.addEventListener('scroll', (e) => {
       if (!ticking && !this.preventScrollEvents) {
