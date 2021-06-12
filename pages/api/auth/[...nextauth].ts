@@ -31,12 +31,7 @@ const options: NextAuthOptions = {
     newUser: '/auth/signup',
   },
   jwt: {
-    signingKey: JSON.stringify({
-      kty: 'oct',
-      kid: 'cf_nboSy_GtPJTrd3SmbomMI5bxRXirYF3MMwvHhr-0',
-      alg: 'HS512',
-      k: 'gt3zE3JqG9Jy1pPdC8fofOp2Mhfzi8u586Jp1Zqq15AHhVRwJd9-ZFOgHDQtMJkMP3Jl79zRp-vgg_uuGxUMHA'
-    }),
+    signingKey: JSON.stringify({}),
     verificationOptions: {
       algorithms: ["HS512"]
     }
