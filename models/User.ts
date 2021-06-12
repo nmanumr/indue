@@ -1,5 +1,9 @@
-import {Model, model, Schema} from 'mongoose';
+import {Model, model, Schema, Document} from 'mongoose';
 import bcrypt from 'bcryptjs';
+
+/*----------------
+ * Types
+ *----------------*/
 
 export interface User {
   name: string;
@@ -9,10 +13,14 @@ export interface User {
   emailVerified: boolean;
 }
 
-interface UserDocument extends User, Document {
+export interface UserDocument extends User, Document {
   validatePassword(password: string): Promise<Boolean>;
-  toJSON(): Omit<User, 'password'>;
+  getExposable(): Omit<User, 'password'>;
 }
+
+/*----------------
+ * Base Schema
+ *----------------*/
 
 const schema = new Schema<User>({
   name: {type: String, required: true},
@@ -22,6 +30,11 @@ const schema = new Schema<User>({
   emailVerified: Boolean,
 });
 
+
+/*----------------
+ * Methods
+ *----------------*/
+
 schema.methods.validatePassword = function (password): Promise<Boolean> {
   return new Promise((res) => {
     bcrypt.compare(password, this.password, function (error, isMatch) {
@@ -30,7 +43,7 @@ schema.methods.validatePassword = function (password): Promise<Boolean> {
   })
 }
 
-schema.methods.toJSON = function (): Omit<User, 'password'> {
+schema.methods.getExposable = function (): Omit<User, 'password'> {
   return {
     name: this.name,
     email: this.email,
@@ -39,8 +52,12 @@ schema.methods.toJSON = function (): Omit<User, 'password'> {
   }
 }
 
-schema.pre("save", function (next) {
-  const user: User = this;
+/*----------------
+ * Middlewares
+ *----------------*/
+
+schema.pre<UserDocument>("save", function (next) {
+  const user = this;
 
   if (!this.isModified("password") && !this.isNew) {
     return next();
@@ -61,6 +78,11 @@ schema.pre("save", function (next) {
     })
   })
 })
+
+
+/*----------------
+ * Export
+ *----------------*/
 
 export let UserModel: Model<UserDocument>;
 try {

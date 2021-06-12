@@ -1,7 +1,7 @@
 import type {NextApiRequest, NextApiResponse} from 'next';
 import {createSchema as S, TsjsonParser, Validated} from 'ts-json-validator';
 import {dbConnect} from 'src/utils'
-import {UserModel} from "src/models";
+import {UserModel} from "models";
 
 let schema = S({
   type: 'object',

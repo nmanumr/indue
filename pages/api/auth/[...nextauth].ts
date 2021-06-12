@@ -1,8 +1,8 @@
 import {NextApiHandler} from 'next'
-import NextAuth, {NextAuthOptions, User} from 'next-auth'
+import NextAuth, {NextAuthOptions} from 'next-auth'
 import Providers from 'next-auth/providers'
-import { dbConnect } from 'src/utils';
-import { UserModel } from 'src/models';
+import {dbConnect} from 'src/utils';
+import {UserModel} from 'models';
 
 const options: NextAuthOptions = {
   providers: [
@@ -16,7 +16,7 @@ const options: NextAuthOptions = {
         await dbConnect();
         let user = await UserModel.findOne({email: credentials.username});
         if (user && await user.validatePassword(credentials.password)) {
-          return user.toJSON();
+          return user.getExposable();
         }
 
         return null;
