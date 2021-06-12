@@ -1,10 +1,13 @@
 import React, {useState} from "react";
 import {useForm} from "react-hook-form";
 import FormInput from "components/FormInput";
+import {signIn} from 'next-auth/client'
+import {useRouter} from "next/router";
 
 export default function SignUp() {
-  let form = useForm({mode: 'onBlur'});
-  let [apiError, setApiError] = useState<string>();
+  const form = useForm({mode: 'onBlur'});
+  const [apiError, setApiError] = useState<string>();
+  const router = useRouter();
 
   const onSubmit = async (data: { name: string, email: string, password: string, password2?: string }) => {
     if (data.password !== data.password2) {
@@ -19,9 +22,13 @@ export default function SignUp() {
         body: JSON.stringify(data),
         headers: {'Content-Type': 'application/json'}
       });
+
       if (response.status === 400) {
-        setApiError((await response.json()).message);
+        return setApiError((await response.json()).message);
       }
+
+      await signIn('credentials', { username: data.email, password: data.password });
+      await router.push('/auth/signin');
     } catch (e) {
       console.log(e);
     }

@@ -5,19 +5,20 @@ export interface User {
   name: string;
   email: string;
   password: string;
-  avatar?: string;
+  image?: string;
   emailVerified: boolean;
 }
 
 interface UserDocument extends User, Document {
   validatePassword(password: string): Promise<Boolean>;
+  toJSON(): Omit<User, 'password'>;
 }
 
 const schema = new Schema<User>({
   name: {type: String, required: true},
   email: {type: String, required: true, unique: true, dropDups: true},
   password: {type: String, required: true},
-  avatar: String,
+  image: String,
   emailVerified: Boolean,
 });
 
@@ -27,6 +28,15 @@ schema.methods.validatePassword = function (password): Promise<Boolean> {
       return res(error ? false : isMatch);
     })
   })
+}
+
+schema.methods.toJSON = function (): Omit<User, 'password'> {
+  return {
+    name: this.name,
+    email: this.email,
+    image: this.image,
+    emailVerified: this.emailVerified,
+  }
 }
 
 schema.pre("save", function (next) {

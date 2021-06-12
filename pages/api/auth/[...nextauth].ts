@@ -4,9 +4,6 @@ import Providers from 'next-auth/providers'
 import { dbConnect } from 'src/utils';
 import { UserModel } from 'src/models';
 
-const authHandler: NextApiHandler = (req, res) => NextAuth(req, res, options)
-export default authHandler
-
 const options: NextAuthOptions = {
   providers: [
     Providers.Credentials({
@@ -15,26 +12,23 @@ const options: NextAuthOptions = {
         email: {label: "Email", type: "email"},
         password: {label: "Password", type: "password"}
       },
-      async authorize(credentials: Record<'email' | 'password', string>, req) {
+      async authorize(credentials: Record<'username' | 'password', string>, req) {
         await dbConnect();
-        let x = UserModel.findOne({email: credentials.email});
-        console.log(x);
-        const user: User = {
-          name: "Nauman Umer",
-          email: "nmanumr@gmail.com",
-          image: "https://avatars.githubusercontent.com/u/19629102?v=4"
+        let user = await UserModel.findOne({email: credentials.username});
+        if (user && await user.validatePassword(credentials.password)) {
+          return user.toJSON();
         }
-        if (user) {
-          // Any user object returned here will be saved in the JSON Web Token
-          return user
-        } else {
-          return null
-        }
+
+        return null;
       }
     })
   ],
   session: {
     jwt: true,
+  },
+  pages: {
+    signIn: '/auth/signin',
+    newUser: '/auth/signup',
   },
   jwt: {
     signingKey: JSON.stringify({
@@ -49,3 +43,6 @@ const options: NextAuthOptions = {
   },
   secret: process.env.SECRET,
 }
+
+const authHandler: NextApiHandler = (req, res) => NextAuth(req, res, options)
+export default authHandler
