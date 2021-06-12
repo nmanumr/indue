@@ -16,21 +16,24 @@
     "@headlessui/react": "^1.2.0",
     "@heroicons/react": "^1.0.1",
     "@prisma/client": "^2.23.0",
+    "bcryptjs": "^2.4.3",
     "classnames": "^2.3.1",
+    "mongoose": "^5.12.13",
     "next": "10.2.0",
     "next-auth": "^3.23.1",
     "react": "17.0.2",
     "react-dom": "17.0.2",
     "react-hook-form": "^7.6.3",
-    "styled-components": "5.1.1"
+    "styled-components": "5.1.1",
+    "ts-json-validator": "^0.7.1"
   },
   "devDependencies": {
     "@tailwindcss/forms": "^0.3.2",
+    "@types/bcryptjs": "^2.4.2",
     "@types/react": "^17.0.5",
     "@types/styled-components": "^5.1.9",
     "autoprefixer": "^10.2.5",
     "postcss": "^8.2.15",
-    "prisma": "^2.23.0",
     "tailwindcss": "^2.1.2",
     "typescript": "^4.2.4"
   }
