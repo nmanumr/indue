@@ -4,6 +4,8 @@ import Providers from 'next-auth/providers'
 import {dbConnect} from 'src/utils';
 import {UserModel} from 'models';
 
+const JWT_SIGNING_KEY = JSON.parse(process.env['JWT_KEY'] as string);
+
 const options: NextAuthOptions = {
   providers: [
     Providers.Credentials({
@@ -31,9 +33,9 @@ const options: NextAuthOptions = {
     newUser: '/auth/signup',
   },
   jwt: {
-    signingKey: JSON.stringify({}),
+    signingKey: JSON.stringify(JWT_SIGNING_KEY),
     verificationOptions: {
-      algorithms: ["HS512"]
+      algorithms: [JWT_SIGNING_KEY.alg]
     }
   },
   secret: process.env.SECRET,
