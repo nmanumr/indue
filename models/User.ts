@@ -15,7 +15,7 @@ export interface User {
 
 export interface UserDocument extends User, Document {
   validatePassword(password: string): Promise<Boolean>;
-  getExposable(): Omit<User, 'password'>;
+  getExposable(): Omit<User, 'password'> & {id: string};
 }
 
 /*----------------
@@ -43,8 +43,9 @@ schema.methods.validatePassword = function (password): Promise<Boolean> {
   })
 }
 
-schema.methods.getExposable = function (): Omit<User, 'password'> {
+schema.methods.getExposable = function (this: UserDocument): Omit<User, 'password'> & {id: string} {
   return {
+    id: this._id,
     name: this.name,
     email: this.email,
     image: this.image,

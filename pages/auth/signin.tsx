@@ -14,7 +14,7 @@ export default function Signin() {
     if (!response?.ok && response?.error === 'CredentialsSignin') {
       setApiError('Invalid username or password');
     } else {
-      await router.push('/auth/signin');
+      await router.push('/');
     }
   }
 

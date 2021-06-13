@@ -1,7 +1,7 @@
 import {NextApiHandler} from 'next'
 import NextAuth, {NextAuthOptions} from 'next-auth'
 import Providers from 'next-auth/providers'
-import {dbConnect} from 'src/utils';
+import {dbConnect} from 'middlewares';
 import {UserModel} from 'models';
 
 const JWT_SIGNING_KEY = JSON.parse(process.env['JWT_KEY'] as string);
@@ -37,6 +37,19 @@ const options: NextAuthOptions = {
     verificationOptions: {
       algorithms: [JWT_SIGNING_KEY.alg]
     }
+  },
+  callbacks: {
+    jwt: async (token, user, account, profile, isNewUser) => {
+      if (user) {
+        token.uid = user.id;
+      }
+      return Promise.resolve(token);
+    },
+    session: async (session, user) => {
+      if (session && session.user && user)
+        (session.user as any).uid = user.uid;
+      return Promise.resolve(session);
+    },
   },
   secret: process.env.SECRET,
 }
