@@ -64,7 +64,7 @@ schema.pre<WalletDocument>('save', function (next) {
 
 export let WalletModel: Model<WalletDocument>;
 try {
-  WalletModel = model("User");
+  WalletModel = model("Wallet");
 } catch {
-  WalletModel = model("User", schema);
+  WalletModel = model("Wallet", schema);
 }
