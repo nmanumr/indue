@@ -5,7 +5,7 @@ import {CalendarIcon} from '@heroicons/react/outline'
 import c from 'classnames';
 import {formatNumber} from "../src/utils";
 import MonthSelector from "../components/monthSelector";
-import {signIn, useSession} from "next-auth/client";
+import Header from "components/Header";
 
 let data = {
   overview: {
@@ -119,96 +119,23 @@ let data = {
 
 function Home() {
   let [months, setMonths] = useState(["2021-03"]);
-  const [session, loading] = useSession()
 
   return (
-    <div className="overflow-y-auto w-full">
-      {
-        !session
-          ? <button onClick={() => signIn()}>Sign in</button>
-          : ''
-      }
-      <header className="bg-white border-b border-gray-300">
-        <div className="flex items-center max-w-screen-xl mx-auto px-4 py-4 sm:px-6 lg:px-8">
-          <h1 className="flex-grow text-lg font-medium leading-6 text-gray-900 sm:truncate">Home</h1>
-          <div className="mt-4 flex sm:mt-0 sm:ml-4">
-            <Menu as="div" className="ml-3 relative inline-block text-left z-20">
-              {({open}) => (
-                <>
-                  <div>
-                    <Menu.Button
-                      className="-my-2 p-2 rounded-full bg-white flex items-center text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-600">
-                      <span className="sr-only">Open options</span>
-                      <DotsVerticalIcon className="h-5 w-5" aria-hidden="true"/>
-                    </Menu.Button>
-                  </div>
+    <div className="overflow-y-auto w-full h-full flex flex-col">
+      <Header title="Home" menuItems={[
+        {
+          name: 'Add month',
+          onClick: () => setMonths([...months, "2021-03"])
+        }, {
+          name: 'Option 1',
+          onClick: () => null,
+        }, {
+          name: 'Option 2',
+          onClick: () => null,
+        }
+      ]}/>
 
-                  <Transition
-                    show={open}
-                    as={Fragment}
-                    enter="transition ease-out duration-100"
-                    enterFrom="transform opacity-0 scale-95"
-                    enterTo="transform opacity-100 scale-100"
-                    leave="transition ease-in duration-75"
-                    leaveFrom="transform opacity-100 scale-100"
-                    leaveTo="transform opacity-0 scale-95"
-                  >
-                    <Menu.Items
-                      static
-                      className="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none"
-                    >
-                      <div className="py-1">
-                        <Menu.Item>
-                          {({active}) => (
-                            <button
-                              type="button"
-                              className={c(
-                                active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
-                                'w-full flex justify-between px-4 py-2 text-sm'
-                              )}
-                              onClick={() => setMonths([...months, "2021-03"])}
-                            >
-                              <span>Add month</span>
-                            </button>
-                          )}
-                        </Menu.Item>
-                        <Menu.Item>
-                          {({active}) => (
-                            <a
-                              href="#"
-                              className={c(
-                                active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
-                                'flex justify-between px-4 py-2 text-sm'
-                              )}
-                            >
-                              <span>Dummy Option 2</span>
-                            </a>
-                          )}
-                        </Menu.Item>
-                        <Menu.Item>
-                          {({active}) => (
-                            <a
-                              href="#"
-                              className={c(
-                                active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
-                                'flex justify-between px-4 py-2 text-sm'
-                              )}
-                            >
-                              <span>Dummy Option 3</span>
-                            </a>
-                          )}
-                        </Menu.Item>
-                      </div>
-                    </Menu.Items>
-                  </Transition>
-                </>
-              )}
-            </Menu>
-          </div>
-        </div>
-      </header>
-
-      <div className="overflow-x-auto w-full">
+      <div className="overflow-x-auto w-full flex-grow">
         <div className="px-4 py-4 mt-6 sm:px-6 lg:px-8 mx-auto w-min">
           <div className="border border-gray-300 rounded-md overflow-hidden bg-white">
             <div className={c("flex border-b border-gray-200", {"divide-x": months.length > 1})}>

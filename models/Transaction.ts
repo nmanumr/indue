@@ -3,7 +3,6 @@ import {WalletDocument} from "./Wallet";
 import {CategoryDocument} from "./Category";
 import {User} from "./User";
 import {WalletStateDocument} from "./WalletState";
-import {ExpenseAnchorDocument} from "./ExpenseAnchor";
 
 /*----------------
  * Types

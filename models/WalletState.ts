@@ -1,7 +1,6 @@
 import {Document, model, Model, Schema, Types} from "mongoose";
 import {WalletDocument} from "./Wallet";
 import {User} from "./User";
-import {TransactionDocument} from "./Transaction";
 
 /*----------------
  * Types
