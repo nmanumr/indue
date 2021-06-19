@@ -1,6 +1,6 @@
-import React, {Fragment, useState} from "react";
-import {Disclosure, Menu, Popover, Transition} from '@headlessui/react'
-import {ChevronUpIcon, DotsVerticalIcon, XIcon} from '@heroicons/react/solid'
+import React, {useState} from "react";
+import {Disclosure, Popover} from '@headlessui/react'
+import {ChevronUpIcon, XIcon} from '@heroicons/react/solid'
 import {CalendarIcon} from '@heroicons/react/outline'
 import c from 'classnames';
 import {formatNumber} from "../src/utils";

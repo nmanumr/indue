@@ -47,7 +47,7 @@ const schema = new Schema<Transaction>({
 
 schema.pre<TransactionDocument>("save", async function (next) {
   const transaction = this;
-  if (this.isNew) {
+  if (!this.isNew) {
     throw "you can't update a transaction";
   }
 
