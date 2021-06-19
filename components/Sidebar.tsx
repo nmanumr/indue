@@ -1,11 +1,12 @@
 import React from "react";
 import c from 'classnames';
-import {CreditCardIcon, HomeIcon} from '@heroicons/react/outline'
+import {CreditCardIcon, HomeIcon, SwitchHorizontalIcon} from '@heroicons/react/outline'
 import ActiveLink from "./ActiveLink";
 
 const navigation = [
   {name: 'Home', href: '/', icon: HomeIcon},
   {name: 'Accounts', href: '/wallets', icon: CreditCardIcon},
+  {name: 'Transactions', href: '/transactions', icon: SwitchHorizontalIcon},
 ]
 
 

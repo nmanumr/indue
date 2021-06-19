@@ -1,12 +1,12 @@
 import React, {Fragment, useState} from "react";
 import Header from "components/Header";
-import {PencilIcon, PlusIcon} from "@heroicons/react/solid";
 import {Dialog, Transition} from '@headlessui/react'
 import {useForm} from "react-hook-form";
-import FormInput from "../../components/FormInput";
-import {formatNumber} from "../../src/utils";
+import FormInput from "components/FormInput";
+import {formatNumber} from "src/utils";
 import useSWR, {mutate} from "swr";
-import {WalletDocument} from "../../models";
+import {WalletDocument} from "models";
+import Table from "components/Table";
 
 export default function WalletsList() {
   const form = useForm({mode: 'onBlur'});
@@ -128,7 +128,7 @@ export default function WalletsList() {
                   <div className="flex-grow"/>
                   {selectedAccount && <button
                       type="button"
-                      className="mt-3 w-full inline-flex justify-center rounded-md border border-transparent px-4 py-2 text-base font-medium text-red-600 hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+                      className="w-full inline-flex justify-center rounded-md border border-transparent px-4 py-2 text-base font-medium text-red-600 hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:w-auto sm:text-sm"
                       onClick={() => deleteAccount()}
                   >
                     Delete
@@ -141,57 +141,22 @@ export default function WalletsList() {
       </Transition>
 
       <div className="flex-grow px-4 sm:px-6 lg:px-8 max-w-screen-xl mx-auto w-full py-10">
-        <div className="flex flex-col">
-          <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-            <div className="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
-              <div className="border border-gray-300 bg-white overflow-hidden sm:rounded-lg">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead>
-                  <tr className="bg-gray-100">
-                    <th scope="col"
-                        className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                    >
-                      Name
-                    </th>
-                    <th scope="col"
-                        className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                    >
-                      Balance
-                    </th>
-                    <th scope="col" className="relative px-4 py-3 w-0">
-                      <span className="sr-only">Edit</span>
-                    </th>
-                  </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-200">
-                  {wallets && wallets.map((w) => (
-                    <tr key={w._id}>
-                      <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">{w.name}</td>
-                      <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">{formatNumber(10000.23)}</td>
-                      <td className="px-4 py-3 whitespace-nowrap text-right text-sm font-medium w-0">
-                        <button type="button" aria-haspopup="true" onClick={() => openDialog(w._id)}
-                                className="-my-2 p-2 rounded flex items-center text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-600">
-                          <span className="sr-only">Edit</span>
-                          <PencilIcon className="h-5 w-5"/>
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                  <tr>
-                    <td colSpan={3} className="px-4 py-2 text-sm font-medium">
-                      <button onClick={() => openDialog()}
-                              className="flex text-indigo-500 hover:text-indigo-700 py-0.5 pl-1 pr-2.5">
-                        <PlusIcon className="h-5 w-5 opacity-90"/>
-                        <span className="ml-2">New Wallet</span>
-                      </button>
-                    </td>
-                  </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        </div>
+        {wallets && <Table
+            onEditClicked={(id) => openDialog(id)}
+            onNewClicked={openDialog}
+            data={wallets}
+            columns={[
+              {
+                key: "name",
+                title: 'Name'
+              },
+              {
+                key: "balance",
+                title: 'Balance',
+                render: () => formatNumber(10000.23)
+              },
+            ]}
+        />}
       </div>
     </div>
   )
