@@ -192,17 +192,17 @@ function Home() {
                 </div>
                 {months.map((month, i) => (
                   <div key={i} className="flex items-center">
-                    <div className="w-32 px-4 py-3 text-left text-right text-xs">
+                    <div className="w-32 px-4 py-3 text-right text-xs">
                       <span className="font-medium text-gray-500 uppercase tracking-wider">Budgeted</span>
                       <br/>
                       <span className="font-medium text-gray-700">{formatNumber(data.overview.budgeted)}</span>
                     </div>
-                    <div className="w-32 px-4 py-3 text-left text-right text-xs">
+                    <div className="w-32 px-4 py-3 text-right text-xs">
                       <span className="font-medium text-gray-500 uppercase tracking-wider">Spent</span>
                       <br/>
                       <span className="font-medium text-gray-700">{formatNumber(data.overview.spent)}</span>
                     </div>
-                    <div className="w-32 px-4 py-3 text-left text-right text-xs">
+                    <div className="w-32 px-4 py-3 text-right text-xs">
                       <span className="font-medium text-gray-500 uppercase tracking-wider">Balance</span>
                       <br/>
                       <span className="font-medium text-gray-700">{formatNumber(data.overview.balance)}</span>

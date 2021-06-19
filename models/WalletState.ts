@@ -34,6 +34,40 @@ const schema = new Schema<User>({
 });
 
 /*----------------
+ * Static Methods
+ *----------------*/
+
+export function getNearestWalletState(date: Date, walletId: string): Promise<WalletStateDocument | null> {
+  return WalletStateModel
+    .findOne({date: {$lte: date}})
+    .sort({field: 'date', test: 'desc'})
+    .exec();
+}
+
+export async function updateOrCreateWalletState(
+  date: Date,
+  walletId: string,
+  newBalance: number
+): Promise<WalletStateDocument> {
+  let walletState = await WalletStateModel.findOne({date, wallet: walletId});
+  if (walletState) {
+    if (newBalance > 0) {
+      await walletState.update({balance: walletState.balance + newBalance});
+    }
+    return walletState;
+  } else {
+    let previousState = await getNearestWalletState(date, walletId);
+    let lastBalance = previousState ? previousState.balance : 0;
+
+    return WalletStateModel.create({
+      date,
+      wallet: walletId,
+      balance: lastBalance + newBalance,
+    });
+  }
+}
+
+/*----------------
  * Export
  *----------------*/
 
