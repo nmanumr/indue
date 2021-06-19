@@ -5,7 +5,7 @@ import ActiveLink from "./ActiveLink";
 
 const navigation = [
   {name: 'Home', href: '/', icon: HomeIcon},
-  {name: 'Wallets', href: '/wallets', icon: CreditCardIcon},
+  {name: 'Accounts', href: '/wallets', icon: CreditCardIcon},
 ]
 
 
@@ -45,39 +45,6 @@ export default function Sidebar() {
               </ActiveLink>
             ))}
           </div>
-
-          {/*<div className="mt-8">*/}
-          {/*  <h3 className="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider" id="teams-headline">*/}
-          {/*    Categories*/}
-          {/*  </h3>*/}
-          {/*  <div className="mt-1 space-y-1" role="group" aria-labelledby="teams-headline">*/}
-
-          {/*    <a href="#"*/}
-          {/*       className="group flex items-center px-3 py-2 text-sm font-medium text-gray-700 rounded-md hover:text-gray-900 hover:bg-gray-50">*/}
-          {/*      <span className="w-2.5 h-2.5 mr-4 bg-indigo-500 rounded-full"/>*/}
-          {/*      <span className="truncate">*/}
-          {/*              Engineering*/}
-          {/*            </span>*/}
-          {/*    </a>*/}
-
-          {/*    <a href="#"*/}
-          {/*       className="group flex items-center px-3 py-2 text-sm font-medium text-gray-700 rounded-md hover:text-gray-900 hover:bg-gray-50">*/}
-          {/*      <span className="w-2.5 h-2.5 mr-4 bg-green-500 rounded-full"/>*/}
-          {/*      <span className="truncate">*/}
-          {/*              Human Resources*/}
-          {/*            </span>*/}
-          {/*    </a>*/}
-
-          {/*    <a href="#"*/}
-          {/*       className="group flex items-center px-3 py-2 text-sm font-medium text-gray-700 rounded-md hover:text-gray-900 hover:bg-gray-50">*/}
-          {/*      <span className="w-2.5 h-2.5 mr-4 bg-yellow-500 rounded-full"/>*/}
-          {/*      <span className="truncate">*/}
-          {/*              Customer Success*/}
-          {/*            </span>*/}
-          {/*    </a>*/}
-
-          {/*  </div>*/}
-          {/*</div>*/}
         </nav>
       </div>
     </div>

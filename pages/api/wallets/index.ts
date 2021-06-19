@@ -8,7 +8,8 @@ import {Session} from "next-auth";
 
 async function getWallets(req: NextApiRequest, res: NextApiResponse) {
   const session = await getSession({req}) as Session;
-  res.send(await WalletModel.find({owner: (session.user as any)?.uid}));
+  let wallets = await WalletModel.find({owner: (session.user as any)?.uid});
+  res.send(wallets);
 }
 
 
@@ -16,13 +17,13 @@ async function addWallet(req: NextApiRequest, res: NextApiResponse) {
   const session = await getSession({req}) as Session;
   let data: Omit<Wallet, 'owner'> = req.body;
 
-  let category = await WalletModel.create({
+  let wallet = await WalletModel.create({
     name: data.name,
     owner: (session.user as any)?.uid,
     updatedAt: new Date(),
   });
 
-  res.status(201).send(category);
+  res.status(201).send(wallet);
 }
 
 

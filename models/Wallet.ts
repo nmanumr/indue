@@ -17,11 +17,11 @@ interface WalletBaseDocument extends Wallet, Document {
 }
 
 export interface WalletDocument extends WalletBaseDocument {
-  company: UserDocument["_id"];
+  owner: UserDocument["_id"];
 }
 
 export interface WalletPopulatedDocument extends WalletBaseDocument {
-  company: UserDocument;
+  owner: UserDocument;
 }
 
 /*----------------
