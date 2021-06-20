@@ -1,8 +1,8 @@
 import {Document, model, Model, Schema, Types} from "mongoose";
 import {WalletDocument} from "./Wallet";
 import {CategoryDocument} from "./Category";
-import {updateOrCreateWalletState, WalletStateModel} from "./WalletState";
-import {CategoryStateModel, updateOrCreateCategoryState} from "./CategoryState";
+import {updateOrCreateWalletState} from "./WalletState";
+import {updateOrCreateCategoryState} from "./CategoryState";
 
 /*----------------
  * Types

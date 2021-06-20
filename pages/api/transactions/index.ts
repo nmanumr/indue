@@ -1,6 +1,6 @@
 import {NextApiRequest, NextApiResponse} from "next";
 import nc from "next-connect";
-import {Transaction, TransactionModel, Wallet, WalletModel} from "models";
+import {Transaction, TransactionModel} from "models";
 import {getSession} from "next-auth/client";
 import all from "middlewares/all";
 import {Session} from "next-auth";
