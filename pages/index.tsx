@@ -2,13 +2,13 @@ import React, {useState} from "react";
 import {Disclosure, Popover} from '@headlessui/react'
 import {ChevronUpIcon, PlusIcon, XIcon} from '@heroicons/react/solid'
 import {CalendarIcon, LogoutIcon} from '@heroicons/react/outline'
-import c from 'classnames';
 import {formatNumber} from "../src/utils";
-import MonthSelector from "../components/monthSelector";
-import Header from "components/Header";
 import {useSession, signOut} from "next-auth/client";
 import {useRouter} from "next/router";
+import MonthSelector from "../components/monthSelector";
+import Header from "components/Header";
 import useSWR from "swr";
+import c from 'classnames';
 
 function fetcher(...urls: string[]) {
   const f = (u: string) => fetch(u).then((r) => r.json());
