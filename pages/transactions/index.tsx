@@ -3,8 +3,17 @@ import Header from "components/Header";
 import Table from "components/Table";
 import CreateEditModel from "components/CreateEditModel";
 import FormInput from "components/FormInput";
+import {useSession} from "next-auth/client";
+import {useRouter} from "next/router";
 
 export default function TransactionsList() {
+  const [session, loading] = useSession();
+  const router = useRouter();
+  if (loading) return null;
+  if (!loading && !session) {
+    router.replace('/auth/signin').then();
+    return null;
+  }
   // const [openModel, CreateEditModel] = useCreateEditModel('/api/transactions');
 
   const [isOpen, setOpenState] = useState<boolean>(false);

@@ -6,10 +6,20 @@ import FormInput from "components/FormInput";
 import Table from "components/Table";
 import CreateEditModel from "components/CreateEditModel";
 import {formatNumber} from "src/utils";
+import {useSession} from "next-auth/client";
+import {useRouter} from "next/router";
 
 
 export default function WalletsList() {
-  const {data: wallets} = useSWR<WalletDocument[]>('/api/wallets');
+  const [session, loading] = useSession();
+  const router = useRouter();
+  if (loading) return null;
+  if (!loading && !session) {
+    router.replace('/auth/signin').then();
+    return null;
+  }
+
+  const {data: wallets, error} = useSWR<WalletDocument[]>('/api/wallets');
 
   const [isOpen, setOpenState] = useState<boolean>(false);
   const [selectedId, setSelectedId] = useState<string>();

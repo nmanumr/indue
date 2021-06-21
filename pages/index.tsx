@@ -6,6 +6,8 @@ import c from 'classnames';
 import {formatNumber} from "../src/utils";
 import MonthSelector from "../components/monthSelector";
 import Header from "components/Header";
+import {useSession} from "next-auth/client";
+import {useRouter} from "next/router";
 
 let data = {
   overview: {
@@ -118,6 +120,14 @@ let data = {
 }
 
 function Home() {
+  const [session, loading] = useSession();
+  const router = useRouter();
+  if (loading) return null;
+  if (!loading && !session) {
+    router.replace('/auth/signin').then();
+    return null;
+  }
+
   let [months, setMonths] = useState(["2021-03"]);
 
   return (
