@@ -53,7 +53,7 @@ schema.pre<TransactionDocument>("save", async function (next) {
 
   let date = new Date(new Date().toDateString());
   await updateOrCreateWalletState(date, transaction.wallet, transaction.amount);
-  await updateOrCreateCategoryState(date, transaction.category, transaction.subCategory, transaction.amount);
+  await updateOrCreateCategoryState(date, transaction.category, transaction.subCategory, -transaction.amount);
 
   transaction.createdAt = new Date();
   return next();

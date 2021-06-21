@@ -31,7 +31,7 @@ export default function SignUp() {
       await signIn('credentials', { username: data.email, password: data.password });
       await router.push('/auth/signin');
     } catch (e) {
-      console.log(e);
+      console.error(e);
     }
   }
 

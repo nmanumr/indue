@@ -16,7 +16,7 @@ import {CategoryDocument, CategoryModel} from "./Category";
 export interface CategoryState {
   expenseAnchor: Types.ObjectId | ExpenseAnchor;
   category: Types.ObjectId | CategoryDocument;
-  subcategory: string;
+  subCategory: string;
   budget: number;
   expense: number;
   initialBalance: number;
@@ -40,7 +40,7 @@ export interface CategoryStatePopulatedDocument extends CategoryStateBaseDocumen
 const schema = new Schema<User>({
   expenseAnchor: {type: Schema.Types.ObjectId, ref: "ExpenseAnchor", required: true},
   category: {type: Schema.Types.ObjectId, ref: "Category", required: true},
-  subcategory: {type: String, default: () => '_default'},
+  subCategory: {type: String, default: () => '_default'},
   budget: {type: Number, default: () => 0},
   expense: {type: Number, default: () => 0},
   initialBalance: {type: Number, default: () => 0},
@@ -62,7 +62,7 @@ export async function getNearestCategoryState(
   }
 
   return CategoryStateModel
-    .findOne({category: categoryId, subCategory, expenseAnchor})
+    .findOne({category: categoryId, subCategory, expenseAnchor: expenseAnchor._id})
     .populate('expenseAnchor')
     .exec();
 }
@@ -86,7 +86,7 @@ export async function updateOrCreateCategoryState(
   let expenseAnchor = await getOrCreateMonthAnchor(date, category?.owner as string);
   if (state) {
     return await CategoryStateModel.create({
-      expenseAnchor,
+      expenseAnchor: expenseAnchor._id,
       category: categoryId,
       subCategory,
       budget: state.budget,
@@ -95,7 +95,7 @@ export async function updateOrCreateCategoryState(
     });
   } else {
     return await CategoryStateModel.create({
-      expenseAnchor,
+      expenseAnchor: expenseAnchor._id,
       category: categoryId,
       subCategory,
       budget: 0,

@@ -41,6 +41,7 @@ schema.index({name: 1, startDate: 1, endDate: 1}, {unique: true});
 
 export async function getOrCreateMonthAnchor(startDate: Date, ownerId: string): Promise<ExpenseAnchorDocument> {
   startDate = new Date(startDate.toDateString());
+  startDate.setDate(1);
   let anchor = await ExpenseAnchorModel.findOne({startDate});
   if (anchor) {
     return anchor;
@@ -59,8 +60,8 @@ export async function getOrCreateMonthAnchor(startDate: Date, ownerId: string): 
 
 export async function getNearestExpenseAnchor(date: Date, ownerId: string) {
   let anchor = await ExpenseAnchorModel.findOne({
-    startDate: {$gte: date},
-    endDate: {$lte: date},
+    startDate: {$lte: date},
+    endDate: {$gte: date},
   });
 
   if (!anchor) {

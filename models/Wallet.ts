@@ -42,7 +42,7 @@ schema.index({name: 1, owner: 1, deletedAt: 1}, {unique: true});
  *----------------*/
 
 schema.methods.getWalletState = function (this: WalletDocument, date?: Date) {
-  console.log("HERE");
+  console.error("HERE");
 }
 
 /*----------------

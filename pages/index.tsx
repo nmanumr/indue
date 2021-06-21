@@ -8,127 +8,24 @@ import MonthSelector from "../components/monthSelector";
 import Header from "components/Header";
 import {useSession, signOut} from "next-auth/client";
 import {useRouter} from "next/router";
+import useSWR from "swr";
 
-let data = {
-  overview: {
-    budgeted: 7568.31,
-    spent: 3101.79,
-    balance: 7702.31,
-  },
-  categories: [
-    {
-      name: 'Usual Expenses',
-      overview: {
-        budgeted: 5733.31,
-        spent: 1521.799,
-        balance: 7447.31,
-      },
-      children: [
-        {
-          name: 'Food',
-          overview: {
-            budgeted: 700,
-            spent: 132,
-            balance: 1305,
-          },
-        },
-        {
-          name: 'Restaurants',
-          overview: {
-            budgeted: 700,
-            spent: 132,
-            balance: 1305,
-          },
-        },
-        {
-          name: 'Entertainment',
-          overview: {
-            budgeted: 700,
-            spent: 132,
-            balance: 1305,
-          },
-        },
-        {
-          name: 'General',
-          overview: {
-            budgeted: 700,
-            spent: 132,
-            balance: 1305,
-          },
-        },
-        {
-          name: 'Medical',
-          overview: {
-            budgeted: 700,
-            spent: 132,
-            balance: 1305,
-          },
-        },
-        {
-          name: 'Savings',
-          overview: {
-            budgeted: 700,
-            spent: 0,
-            balance: 1305,
-          },
-        },
-      ]
-    },
-    {
-      name: 'Bills',
-      overview: {
-        budgeted: 5733.31,
-        spent: 1521.799,
-        balance: 7447.31,
-      },
-      children: [
-        {
-          name: 'Cell',
-          overview: {
-            budgeted: 700,
-            spent: 132,
-            balance: 1305,
-          },
-        },
-        {
-          name: 'Internet',
-          overview: {
-            budgeted: 700,
-            spent: 132,
-            balance: 1305,
-          },
-        },
-        {
-          name: 'Water',
-          overview: {
-            budgeted: 700,
-            spent: 132,
-            balance: 1305,
-          },
-        },
-        {
-          name: 'Power',
-          overview: {
-            budgeted: 700,
-            spent: 132,
-            balance: 1305,
-          },
-        },
-      ]
-    }
-  ]
+function fetcher(...urls: string[]) {
+  const f = (u: string) => fetch(u).then((r) => r.json());
+  return Promise.all(urls.map(f));
 }
 
 function Home() {
+  let [months, setMonths] = useState(["2021-06"]);
+  const {data: data} = useSWR(months.map((m) => `/api/summary/${m}`), fetcher);
   const [session, loading] = useSession();
   const router = useRouter();
+
   if (loading) return null;
   if (!loading && !session) {
     router.replace('/auth/signin').then();
     return null;
   }
-
-  let [months, setMonths] = useState(["2021-03"]);
 
   return (
     <div className="overflow-y-auto w-full h-full flex flex-col">
@@ -166,7 +63,7 @@ function Home() {
                     <Popover.Button
                       className="flex items-center mt-2 py-1 px-2 cursor-pointer hover:border-solid border-b border-dashed border-gray-400 space-x-4">
                       <div className="text-xl leading-6 font-medium text-gray-900 flex">
-                        May 2021
+                        {month}
                       </div>
                       <CalendarIcon className="w-5 h-5 text-gray-500"/>
                     </Popover.Button>
@@ -178,23 +75,29 @@ function Home() {
                     <div
                       className="font-medium text-right text-xs text-gray-400 uppercase tracking-wider py-1.5 pr-4">BUDGETED
                     </div>
-                    <div className="font-medium text-right text-gray-600">{formatNumber(data.overview.budgeted)}</div>
+                    <div className="font-medium text-right text-gray-600">
+                      {formatNumber(data?.[i].state.budgeted || 0)}
+                    </div>
 
                     <div
                       className="font-medium text-right text-xs text-gray-400 uppercase tracking-wider py-1.5 pr-4">Spent
                     </div>
-                    <div className="font-medium text-right text-gray-600">{formatNumber(data.overview.spent)}</div>
+                    <div className="font-medium text-right text-gray-600">
+                      {formatNumber(data?.[i].state.expense || 0)}
+                    </div>
 
                     <div
                       className="font-medium text-right text-xs text-gray-400 uppercase tracking-wider py-1.5 pr-4">Balance
                     </div>
-                    <div className="font-medium text-right text-gray-600">{formatNumber(data.overview.balance)}</div>
+                    <div className="font-medium text-right text-gray-600">
+                      {formatNumber(data?.[i].state.balance || 0)}
+                    </div>
                   </div>
                 </div>
               ))}
             </div>
             <div className="divide-y divide-gray-200">
-              <div className={c("flex items-center", {"divide-x": months.length > 1})}>
+              {data && <div className={c("flex items-center", {"divide-x": months.length > 1})}>
                 <div className="w-52 px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Category
                 </div>
@@ -203,23 +106,29 @@ function Home() {
                     <div className="w-32 px-4 py-3 text-right text-xs">
                       <span className="font-medium text-gray-500 uppercase tracking-wider">Budgeted</span>
                       <br/>
-                      <span className="font-medium text-gray-700">{formatNumber(data.overview.budgeted)}</span>
+                      <span className="font-medium text-gray-700">
+                        {formatNumber(data?.[i].state.budgeted)}
+                      </span>
                     </div>
                     <div className="w-32 px-4 py-3 text-right text-xs">
                       <span className="font-medium text-gray-500 uppercase tracking-wider">Spent</span>
                       <br/>
-                      <span className="font-medium text-gray-700">{formatNumber(data.overview.spent)}</span>
+                      <span className="font-medium text-gray-700">
+                        {formatNumber(data?.[i].state.expense)}
+                      </span>
                     </div>
                     <div className="w-32 px-4 py-3 text-right text-xs">
                       <span className="font-medium text-gray-500 uppercase tracking-wider">Balance</span>
                       <br/>
-                      <span className="font-medium text-gray-700">{formatNumber(data.overview.balance)}</span>
+                      <span className="font-medium text-gray-700">
+                        {formatNumber(data?.[i].state.balance)}
+                      </span>
                     </div>
                   </div>
                 ))}
-              </div>
-              {data.categories.map((category, i) => {
-                return <Disclosure key={i} defaultOpen={true}>
+              </div>}
+              {data && data[0].categories.map((category: any, i: number) => (
+                <Disclosure key={category._id} defaultOpen={true}>
                   {({open}) => (
                     <>
                       <div className={c("flex items-center bg-gray-100", {"divide-x": months.length > 1})}>
@@ -234,37 +143,39 @@ function Home() {
                           </Disclosure.Button>
                           <span className="ml-2">{category.name}</span>
                         </div>
-                        {months.map((month, i) => (
-                          <div key={i} className="flex items-center">
+
+                        {data.map((month, j) => (
+                          <div key={j} className="flex items-center">
                             <div className="w-32 px-4 py-2 whitespace-nowrap text-sm text-gray-500 text-right">
-                              {formatNumber(category.overview.budgeted)}
+                              {formatNumber(month.categories[i].state.budgeted)}
                             </div>
                             <div className="w-32 px-4 py-2 whitespace-nowrap text-sm text-gray-500 text-right">
-                              {formatNumber(category.overview.spent)}
+                              {formatNumber(month.categories[i].state.expense)}
                             </div>
                             <div className="w-32 px-4 py-2 whitespace-nowrap text-sm text-gray-500 text-right">
-                              {formatNumber(category.overview.balance)}
+                              {formatNumber(month.categories[i].state.balance)}
                             </div>
                           </div>
                         ))}
                       </div>
+
                       <Disclosure.Panel className="divide-y divide-gray-200">
-                        {category.children.map((subcategory, i2) => (
-                          <div key={i2} className={c("flex items-center", {"divide-x": months.length > 1})}>
+                        {category.subCategories.map((subCategory: any, i2: number) => (
+                          <div key={subCategory.name} className={c("flex items-center", {"divide-x": months.length > 1})}>
                             <div
                               className="w-52 pl-8 pr-4 py-2 whitespace-nowrap text-sm text-gray-900 flex items-center">
-                              {subcategory.name}
+                              {subCategory.name}
                             </div>
-                            {months.map((month, i3) => (
-                              <div key={i3} className="flex items-center">
+                            {data.map((month, j) => (
+                              <div key={j} className="flex items-center">
                                 <div className="w-32 px-4 py-2 whitespace-nowrap text-sm text-gray-500 text-right">
-                                  {formatNumber(subcategory.overview.budgeted)}
+                                  {formatNumber(month.categories[i].subCategories[i2].state.budgeted)}
                                 </div>
                                 <div className="w-32 px-4 py-2 whitespace-nowrap text-sm text-gray-500 text-right">
-                                  {formatNumber(subcategory.overview.spent)}
+                                  {formatNumber(month.categories[i].subCategories[i2].state.expense)}
                                 </div>
                                 <div className="w-32 px-4 py-2 whitespace-nowrap text-sm text-gray-500 text-right">
-                                  {formatNumber(subcategory.overview.balance)}
+                                  {formatNumber(month.categories[i].subCategories[i2].state.balance)}
                                 </div>
                               </div>
                             ))}
@@ -274,7 +185,64 @@ function Home() {
                     </>
                   )}
                 </Disclosure>
-              })}
+              ))}
+              {/*{categories && data.categories.map((category, i) => {*/}
+              {/*  return <Disclosure key={i} defaultOpen={true}>*/}
+              {/*    {({open}) => (*/}
+              {/*      <>*/}
+              {/*        <div className={c("flex items-center bg-gray-100", {"divide-x": months.length > 1})}>*/}
+              {/*          <div*/}
+              {/*            className="flex items-center w-52 px-4 py-2 whitespace-nowrap text-sm text-gray-900 flex items-center">*/}
+              {/*            <Disclosure.Button>*/}
+              {/*              <ChevronUpIcon*/}
+              {/*                className={`${*/}
+              {/*                  open ? '' : 'transform rotate-180'*/}
+              {/*                } w-5 h-5 transition-all duration-200`}*/}
+              {/*              />*/}
+              {/*            </Disclosure.Button>*/}
+              {/*            <span className="ml-2">{category.name}</span>*/}
+              {/*          </div>*/}
+              {/*          {months.map((month, i) => (*/}
+              {/*            <div key={i} className="flex items-center">*/}
+              {/*              <div className="w-32 px-4 py-2 whitespace-nowrap text-sm text-gray-500 text-right">*/}
+              {/*                {formatNumber(category.overview.budgeted)}*/}
+              {/*              </div>*/}
+              {/*              <div className="w-32 px-4 py-2 whitespace-nowrap text-sm text-gray-500 text-right">*/}
+              {/*                {formatNumber(category.overview.spent)}*/}
+              {/*              </div>*/}
+              {/*              <div className="w-32 px-4 py-2 whitespace-nowrap text-sm text-gray-500 text-right">*/}
+              {/*                {formatNumber(category.overview.balance)}*/}
+              {/*              </div>*/}
+              {/*            </div>*/}
+              {/*          ))}*/}
+              {/*        </div>*/}
+              {/*        <Disclosure.Panel className="divide-y divide-gray-200">*/}
+              {/*          {category.children.map((subcategory, i2) => (*/}
+              {/*            <div key={i2} className={c("flex items-center", {"divide-x": months.length > 1})}>*/}
+              {/*              <div*/}
+              {/*                className="w-52 pl-8 pr-4 py-2 whitespace-nowrap text-sm text-gray-900 flex items-center">*/}
+              {/*                {subcategory.name}*/}
+              {/*              </div>*/}
+              {/*              {months.map((month, i3) => (*/}
+              {/*                <div key={i3} className="flex items-center">*/}
+              {/*                  <div className="w-32 px-4 py-2 whitespace-nowrap text-sm text-gray-500 text-right">*/}
+              {/*                    {formatNumber(subcategory.overview.budgeted)}*/}
+              {/*                  </div>*/}
+              {/*                  <div className="w-32 px-4 py-2 whitespace-nowrap text-sm text-gray-500 text-right">*/}
+              {/*                    {formatNumber(subcategory.overview.spent)}*/}
+              {/*                  </div>*/}
+              {/*                  <div className="w-32 px-4 py-2 whitespace-nowrap text-sm text-gray-500 text-right">*/}
+              {/*                    {formatNumber(subcategory.overview.balance)}*/}
+              {/*                  </div>*/}
+              {/*                </div>*/}
+              {/*              ))}*/}
+              {/*            </div>*/}
+              {/*          ))}*/}
+              {/*        </Disclosure.Panel>*/}
+              {/*      </>*/}
+              {/*    )}*/}
+              {/*  </Disclosure>*/}
+              {/*})}*/}
             </div>
           </div>
         </div>

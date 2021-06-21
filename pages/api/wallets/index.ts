@@ -12,10 +12,8 @@ async function getWallets(req: NextApiRequest, res: NextApiResponse) {
 
   let walletsWithState = await Promise.all(wallets.map(async (wallet: any) => {
     let state = await getNearestWalletState(new Date(), wallet._id);
-    return {
-      ...wallet._doc,
-      amount: state ? state.balance : 0,
-    }
+    wallet._doc.amount = state ? state.balance : 0
+    return wallet;
   }))
 
   res.send(walletsWithState);

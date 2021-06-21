@@ -2,7 +2,6 @@ import {Menu, Transition} from "@headlessui/react";
 import {DotsVerticalIcon} from "@heroicons/react/solid";
 import React, {Fragment} from "react";
 import c from "classnames";
-import {LogoutIcon} from "@heroicons/react/outline";
 
 interface Props {
   title: string;
@@ -44,9 +43,9 @@ export default function Header({menuItems, title}: Props) {
                               className="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
                     <div className="py-1">
                       {
-                        menuItems.map((menu) => (
+                        menuItems.map((menu, i) => (
                           menu === 'divider'
-                            ? <div className="my-1 w-full h-px bg-gray-200" />
+                            ? <div key={i} className="my-1 w-full h-px bg-gray-200" />
                             : <Menu.Item key={menu.id || menu.name}>
                               {({active}) => (
                                 <button type="button"
