@@ -36,7 +36,7 @@ export interface TransactionPopulatedDocument extends TransactionBaseDocument {
 const schema = new Schema<Transaction>({
   wallet: {type: Schema.Types.ObjectId, ref: "Wallet", required: true},
   category: {type: Schema.Types.ObjectId, ref: "Category", required: true},
-  createdAt: {type: Date, required: true},
+  createdAt: {type: Date},
   subCategory: {type: String, default: () => '_default'},
   amount: Number,
 });
@@ -52,10 +52,10 @@ schema.pre<TransactionDocument>("save", async function (next) {
   }
 
   let date = new Date(new Date().toDateString());
-
   await updateOrCreateWalletState(date, transaction.wallet, transaction.amount);
   await updateOrCreateCategoryState(date, transaction.category, transaction.subCategory, transaction.amount);
 
+  transaction.createdAt = new Date();
   return next();
 })
 

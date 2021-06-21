@@ -2,7 +2,7 @@ import React from "react";
 import {PencilIcon, PlusIcon} from "@heroicons/react/solid";
 
 interface Props<T = any> {
-  columns: { title: JSX.Element | string, key: string, render?: (text: string, row: any) => string | JSX.Element }[];
+  columns: { title: JSX.Element | string, key: string, render?: (text: any, row: any) => string | JSX.Element }[];
   data: T[];
   newButton?: string | JSX.Element;
   onNewClicked?: () => void;

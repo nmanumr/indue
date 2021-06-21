@@ -39,8 +39,7 @@ const schema = new Schema<User>({
 
 export function getNearestWalletState(date: Date, walletId: string): Promise<WalletStateDocument | null> {
   return WalletStateModel
-    .findOne({date: {$lte: date}})
-    .sort({field: 'date', test: 'desc'})
+    .findOne({date: {$lte: date}, wallet: walletId}, null, {sort: '-date'})
     .exec();
 }
 
@@ -51,7 +50,7 @@ export async function updateOrCreateWalletState(
 ): Promise<WalletStateDocument> {
   let walletState = await WalletStateModel.findOne({date, wallet: walletId});
   if (walletState) {
-    if (newBalance > 0) {
+    if (newBalance !== 0) {
       await walletState.update({balance: walletState.balance + newBalance});
     }
     return walletState;
@@ -60,7 +59,7 @@ export async function updateOrCreateWalletState(
     let lastBalance = previousState ? previousState.balance : 0;
 
     return WalletStateModel.create({
-      date,
+      date: date.toString(),
       wallet: walletId,
       balance: lastBalance + newBalance,
     });

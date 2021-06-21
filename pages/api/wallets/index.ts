@@ -1,6 +1,6 @@
 import {NextApiRequest, NextApiResponse} from "next";
 import nc from "next-connect";
-import {Wallet, WalletModel} from "models";
+import {getNearestWalletState, Wallet, WalletModel} from "models";
 import {getSession} from "next-auth/client";
 import all from "middlewares/all";
 import {Session} from "next-auth";
@@ -9,7 +9,16 @@ import {Session} from "next-auth";
 async function getWallets(req: NextApiRequest, res: NextApiResponse) {
   const session = await getSession({req}) as Session;
   let wallets = await WalletModel.find({owner: (session.user as any)?.uid});
-  res.send(wallets);
+
+  let walletsWithState = await Promise.all(wallets.map(async (wallet: any) => {
+    let state = await getNearestWalletState(new Date(), wallet._id);
+    return {
+      ...wallet._doc,
+      amount: state ? state.balance : 0,
+    }
+  }))
+
+  res.send(walletsWithState);
 }
 
 

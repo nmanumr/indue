@@ -77,7 +77,7 @@ export async function updateOrCreateCategoryState(
   let state = await getNearestCategoryState(date, categoryId, subCategory, category?.owner as string);
 
   if (state && isCurrentAnchor(state.expenseAnchor)) {
-    if (newExpense > 0) {
+    if (newExpense !== 0) {
       await state.update({expense: state.expense + newExpense});
     }
     return state;

@@ -12,18 +12,18 @@ import {LogoutIcon} from "@heroicons/react/outline";
 
 
 export default function WalletsList() {
+  const {data: wallets} = useSWR<WalletDocument[]>('/api/wallets');
+  const [isOpen, setOpenState] = useState<boolean>(false);
+  const [selectedId, setSelectedId] = useState<string>();
   const [session, loading] = useSession();
   const router = useRouter();
+
+
   if (loading) return null;
   if (!loading && !session) {
     router.replace('/auth/signin').then();
     return null;
   }
-
-  const {data: wallets, error} = useSWR<WalletDocument[]>('/api/wallets');
-
-  const [isOpen, setOpenState] = useState<boolean>(false);
-  const [selectedId, setSelectedId] = useState<string>();
 
   function openModel(id?: string) {
     setSelectedId(id);
@@ -37,7 +37,7 @@ export default function WalletsList() {
 
   return (
     <div className="flex flex-col h-full">
-      <Header title="Accounts" menuItems={['divider', {
+      <Header title="Accounts" menuItems={[{
         name: 'Sign Out',
         icon: <LogoutIcon className="h-5 w-5 opacity-90"/>,
         onClick: () => signOut({callbackUrl: '/auth/signin'}),
@@ -72,9 +72,9 @@ export default function WalletsList() {
                 title: 'Name'
               },
               {
-                key: "balance",
+                key: "amount",
                 title: 'Balance',
-                render: () => formatNumber(10000.23)
+                render: (data) => formatNumber(data)
               },
             ]}
         />}

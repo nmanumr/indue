@@ -49,7 +49,11 @@ export async function getOrCreateMonthAnchor(startDate: Date, ownerId: string): 
   let endDate = new Date(startDate.getFullYear(), startDate.getMonth() + 1);
   endDate.setDate(0);
 
-  anchor = await ExpenseAnchorModel.create({startDate, endDate, owner: ownerId});
+  anchor = await ExpenseAnchorModel.create({
+    startDate: startDate.toString(),
+    endDate: endDate.toString(),
+    owner: ownerId
+  });
   return anchor as ExpenseAnchorDocument;
 }
 
@@ -61,8 +65,7 @@ export async function getNearestExpenseAnchor(date: Date, ownerId: string) {
 
   if (!anchor) {
     anchor = await ExpenseAnchorModel
-      .findOne({endDate: {$lt: date}})
-      .sort({field: 'endDate', test: 'desc'})
+      .findOne({endDate: {$lt: date}}, null, {sort: '-endDate'})
       .limit(1);
   }
 
