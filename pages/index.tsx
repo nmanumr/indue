@@ -1,6 +1,6 @@
 import React, {useState} from "react";
 import {Disclosure, Popover} from '@headlessui/react'
-import {ChevronUpIcon, XIcon} from '@heroicons/react/solid'
+import {ChevronUpIcon, PlusIcon, XIcon} from '@heroicons/react/solid'
 import {CalendarIcon, LogoutIcon} from '@heroicons/react/outline'
 import c from 'classnames';
 import {formatNumber} from "../src/utils";
@@ -161,7 +161,8 @@ function Home() {
 
                       <Disclosure.Panel className="divide-y divide-gray-200">
                         {category.subCategories.map((subCategory: any, i2: number) => (
-                          <div key={subCategory.name} className={c("flex items-center", {"divide-x": months.length > 1})}>
+                          <div key={subCategory.name}
+                               className={c("flex items-center", {"divide-x": months.length > 1})}>
                             <div
                               className="w-52 pl-8 pr-4 py-2 whitespace-nowrap text-sm text-gray-900 flex items-center">
                               {subCategory.name}
@@ -186,63 +187,14 @@ function Home() {
                   )}
                 </Disclosure>
               ))}
-              {/*{categories && data.categories.map((category, i) => {*/}
-              {/*  return <Disclosure key={i} defaultOpen={true}>*/}
-              {/*    {({open}) => (*/}
-              {/*      <>*/}
-              {/*        <div className={c("flex items-center bg-gray-100", {"divide-x": months.length > 1})}>*/}
-              {/*          <div*/}
-              {/*            className="flex items-center w-52 px-4 py-2 whitespace-nowrap text-sm text-gray-900 flex items-center">*/}
-              {/*            <Disclosure.Button>*/}
-              {/*              <ChevronUpIcon*/}
-              {/*                className={`${*/}
-              {/*                  open ? '' : 'transform rotate-180'*/}
-              {/*                } w-5 h-5 transition-all duration-200`}*/}
-              {/*              />*/}
-              {/*            </Disclosure.Button>*/}
-              {/*            <span className="ml-2">{category.name}</span>*/}
-              {/*          </div>*/}
-              {/*          {months.map((month, i) => (*/}
-              {/*            <div key={i} className="flex items-center">*/}
-              {/*              <div className="w-32 px-4 py-2 whitespace-nowrap text-sm text-gray-500 text-right">*/}
-              {/*                {formatNumber(category.overview.budgeted)}*/}
-              {/*              </div>*/}
-              {/*              <div className="w-32 px-4 py-2 whitespace-nowrap text-sm text-gray-500 text-right">*/}
-              {/*                {formatNumber(category.overview.spent)}*/}
-              {/*              </div>*/}
-              {/*              <div className="w-32 px-4 py-2 whitespace-nowrap text-sm text-gray-500 text-right">*/}
-              {/*                {formatNumber(category.overview.balance)}*/}
-              {/*              </div>*/}
-              {/*            </div>*/}
-              {/*          ))}*/}
-              {/*        </div>*/}
-              {/*        <Disclosure.Panel className="divide-y divide-gray-200">*/}
-              {/*          {category.children.map((subcategory, i2) => (*/}
-              {/*            <div key={i2} className={c("flex items-center", {"divide-x": months.length > 1})}>*/}
-              {/*              <div*/}
-              {/*                className="w-52 pl-8 pr-4 py-2 whitespace-nowrap text-sm text-gray-900 flex items-center">*/}
-              {/*                {subcategory.name}*/}
-              {/*              </div>*/}
-              {/*              {months.map((month, i3) => (*/}
-              {/*                <div key={i3} className="flex items-center">*/}
-              {/*                  <div className="w-32 px-4 py-2 whitespace-nowrap text-sm text-gray-500 text-right">*/}
-              {/*                    {formatNumber(subcategory.overview.budgeted)}*/}
-              {/*                  </div>*/}
-              {/*                  <div className="w-32 px-4 py-2 whitespace-nowrap text-sm text-gray-500 text-right">*/}
-              {/*                    {formatNumber(subcategory.overview.spent)}*/}
-              {/*                  </div>*/}
-              {/*                  <div className="w-32 px-4 py-2 whitespace-nowrap text-sm text-gray-500 text-right">*/}
-              {/*                    {formatNumber(subcategory.overview.balance)}*/}
-              {/*                  </div>*/}
-              {/*                </div>*/}
-              {/*              ))}*/}
-              {/*            </div>*/}
-              {/*          ))}*/}
-              {/*        </Disclosure.Panel>*/}
-              {/*      </>*/}
-              {/*    )}*/}
-              {/*  </Disclosure>*/}
-              {/*})}*/}
+
+              <div className="px-4 py-2 text-sm font-medium">
+                <button onClick={() => null}
+                        className="flex text-indigo-500 hover:text-indigo-700">
+                  <PlusIcon className="h-5 w-5 opacity-90"/>
+                  <span className="ml-2">Add Category</span>
+                </button>
+              </div>
             </div>
           </div>
         </div>
