@@ -16,7 +16,6 @@ export default function WalletsList() {
 
   function openModel(id?: string) {
     setSelectedId(id);
-    console.log({name: wallets?.find((w) => w._id == id)?.name})
     setOpenState(true);
   }
 

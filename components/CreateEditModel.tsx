@@ -16,7 +16,7 @@ interface Props {
 }
 
 export default function CreateEditModel(props: Props) {
-  const form = useForm();
+  const form = useForm({mode: "onBlur"});
   const [apiError, setApiError] = useState<string>();
   const [selectedItem, setSelectedItem] = useState<string>();
 
@@ -64,7 +64,6 @@ export default function CreateEditModel(props: Props) {
 
     if (props.id) {
       setSelectedItem(props.id);
-      console.log(props.data);
       for (let [key, val] of Object.entries(props.data || {})) {
         form.setValue(key, val);
       }
@@ -72,21 +71,6 @@ export default function CreateEditModel(props: Props) {
       setSelectedItem(undefined);
     }
   }, [props.isOpen]);
-
-  function openDialog(id?: string, data: Record<string, any> = {}) {
-    form.reset();
-    setApiError(undefined);
-
-    if (id) {
-      setSelectedItem(id);
-      for (let [key, val] of Object.entries(data)) {
-        form.setValue(key, val);
-      }
-    } else {
-      setSelectedItem(undefined);
-    }
-    // setIsOpen(true);
-  }
 
   return (
     <Transition appear show={props.isOpen} as={Fragment}>
