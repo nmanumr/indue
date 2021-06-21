@@ -6,6 +6,7 @@ export default async function session(req: NextApiRequest, res: NextApiResponse,
   const session = await getSession({req});
   if (!session) {
     res.status(401).send({'message': 'Unauthorized'});
+    return;
   }
   return next();
 }
