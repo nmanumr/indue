@@ -1,12 +1,12 @@
 import React, {useState} from "react";
 import {Disclosure, Popover} from '@headlessui/react'
 import {ChevronUpIcon, XIcon} from '@heroicons/react/solid'
-import {CalendarIcon} from '@heroicons/react/outline'
+import {CalendarIcon, LogoutIcon} from '@heroicons/react/outline'
 import c from 'classnames';
 import {formatNumber} from "../src/utils";
 import MonthSelector from "../components/monthSelector";
 import Header from "components/Header";
-import {useSession} from "next-auth/client";
+import {useSession, signOut} from "next-auth/client";
 import {useRouter} from "next/router";
 
 let data = {
@@ -136,12 +136,10 @@ function Home() {
         {
           name: 'Add month',
           onClick: () => setMonths([...months, "2021-03"])
-        }, {
-          name: 'Option 1',
-          onClick: () => null,
-        }, {
-          name: 'Option 2',
-          onClick: () => null,
+        }, 'divider', {
+          name: 'Sign Out',
+          icon: <LogoutIcon className="h-5 w-5 opacity-90"/>,
+          onClick: () => signOut({callbackUrl: '/auth/signin'}),
         }
       ]}/>
 

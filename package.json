@@ -7,11 +7,6 @@
     "build": "next build",
     "start": "next start"
   },
-  "babelMacros": {
-    "twin": {
-      "preset": "styled-components"
-    }
-  },
   "dependencies": {
     "@headlessui/react": "^1.2.0",
     "@heroicons/react": "^1.0.1",
@@ -24,7 +19,6 @@
     "react": "17.0.2",
     "react-dom": "17.0.2",
     "react-hook-form": "^7.6.3",
-    "styled-components": "5.1.1",
     "swr": "^0.5.6",
     "ts-json-validator": "^0.7.1"
   },
@@ -32,7 +26,6 @@
     "@tailwindcss/forms": "^0.3.2",
     "@types/bcryptjs": "^2.4.2",
     "@types/react": "^17.0.5",
-    "@types/styled-components": "^5.1.9",
     "autoprefixer": "^10.2.5",
     "postcss": "^8.2.15",
     "tailwindcss": "^2.1.2",

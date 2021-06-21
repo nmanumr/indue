@@ -3,6 +3,7 @@ import {useForm} from "react-hook-form";
 import FormInput from "components/FormInput";
 import {signIn} from 'next-auth/client'
 import {useRouter} from "next/router";
+import Link from "next/link";
 
 export default function SignUp() {
   const form = useForm({mode: 'onBlur'});
@@ -43,7 +44,10 @@ export default function SignUp() {
             Create new Account
           </h3>
           <p className="mt-1 max-w-2xl text-sm text-gray-500">
-            Enter your details to create a new account
+            Or&nbsp;
+            <Link href="/auth/signin">
+              <a className="font-medium text-indigo-600 hover:text-indigo-500">Use existing Account</a>
+            </Link>
           </p>
         </div>
         <div className="border-b border-gray-200 mt-4 -mx-4 sm:-mx-6 lg:-mx-8"/>

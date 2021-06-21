@@ -2,15 +2,16 @@ import {Menu, Transition} from "@headlessui/react";
 import {DotsVerticalIcon} from "@heroicons/react/solid";
 import React, {Fragment} from "react";
 import c from "classnames";
+import {LogoutIcon} from "@heroicons/react/outline";
 
 interface Props {
   title: string;
-  menuItems?: {
+  menuItems?: ({
     icon?: JSX.Element;
     id?: string;
     name: string;
     onClick: (id?: string) => void
-  }[];
+  } | 'divider')[];
 }
 
 export default function Header({menuItems, title}: Props) {
@@ -44,19 +45,22 @@ export default function Header({menuItems, title}: Props) {
                     <div className="py-1">
                       {
                         menuItems.map((menu) => (
-                          <Menu.Item key={menu.id || menu.name}>
-                            {({active}) => (
-                              <button type="button"
-                                      className={c(
-                                        active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
-                                        'w-full flex justify-between px-4 py-2 text-sm'
-                                      )}
-                                      onClick={() => menu.onClick(menu.id)}
-                              >
-                                <span>{menu.name}</span>
-                              </button>
-                            )}
-                          </Menu.Item>
+                          menu === 'divider'
+                            ? <div className="my-1 w-full h-px bg-gray-200" />
+                            : <Menu.Item key={menu.id || menu.name}>
+                              {({active}) => (
+                                <button type="button"
+                                        className={c(
+                                          active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
+                                          'w-full flex px-4 py-2 text-sm space-x-2'
+                                        )}
+                                        onClick={() => menu.onClick(menu.id)}
+                                >
+                                  {menu.icon}
+                                  <span>{menu.name}</span>
+                                </button>
+                              )}
+                            </Menu.Item>
                         ))
                       }
                     </div>
