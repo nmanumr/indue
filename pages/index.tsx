@@ -2,13 +2,14 @@ import React, {useState} from "react";
 import {Disclosure, Popover} from '@headlessui/react'
 import {ChevronUpIcon, PlusIcon, XIcon} from '@heroicons/react/solid'
 import {CalendarIcon, LogoutIcon} from '@heroicons/react/outline'
-import {formatNumber} from "../src/utils";
+import {formatNumber} from "src/utils";
 import {useSession, signOut} from "next-auth/client";
 import {useRouter} from "next/router";
-import MonthSelector from "../components/monthSelector";
+import MonthSelector from "components/monthSelector";
 import Header from "components/Header";
-import useSWR from "swr";
+import useSWR, {mutate} from "swr";
 import c from 'classnames';
+import {InlineFormInput} from "../components/InlineFormInput";
 
 function fetcher(...urls: string[]) {
   const f = (u: string) => fetch(u).then((r) => r.json());
@@ -25,6 +26,16 @@ function Home() {
   if (!loading && !session) {
     router.replace('/auth/signin').then();
     return null;
+  }
+
+  async function updateBudget(amount: string, category: string, subCategory: string, month: string) {
+    await fetch(`/api/categories/${category}`, {
+      method: 'PATCH',
+      body: JSON.stringify({amount, subCategory, month}),
+      headers: {'Content-Type': 'application/json'}
+    });
+
+    await mutate(`/api/summary/${month}`);
   }
 
   return (
@@ -169,8 +180,12 @@ function Home() {
                             </div>
                             {data.map((month, j) => (
                               <div key={j} className="flex items-center">
-                                <div className="w-32 px-4 py-2 whitespace-nowrap text-sm text-gray-500 text-right">
-                                  {formatNumber(month.categories[i].subCategories[i2].state.budgeted)}
+                                <div className="w-32 px-3 py-2 whitespace-nowrap text-sm text-gray-500 text-right">
+                                  <InlineFormInput
+                                    value={month.categories[i].subCategories[i2].state.budgeted}
+                                    render={(v) => formatNumber(v as number)}
+                                    onUpdate={(v) => updateBudget(v, category._id, subCategory.name, month.month)}
+                                  />
                                 </div>
                                 <div className="w-32 px-4 py-2 whitespace-nowrap text-sm text-gray-500 text-right">
                                   {formatNumber(month.categories[i].subCategories[i2].state.expense)}
