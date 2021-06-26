@@ -25,6 +25,7 @@ interface FormatOptions {
 }
 
 export function formatNumber(number: number, opts: Partial<FormatOptions> = {}): string {
+  number = number ?? 0;
   let options: FormatOptions = {
     decimal: '.',       // decimal point separator
     thousand: ',',      // thousands separator

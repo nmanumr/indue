@@ -1,26 +1,41 @@
-import React, {useState} from "react";
+import React, {useCallback, useRef, useState} from "react";
 import {Disclosure, Popover} from '@headlessui/react'
 import {ChevronUpIcon, PlusIcon, XIcon} from '@heroicons/react/solid'
 import {CalendarIcon, LogoutIcon} from '@heroicons/react/outline'
 import {formatNumber} from "src/utils";
-import {useSession, signOut} from "next-auth/client";
+import {signOut, useSession} from "next-auth/client";
 import {useRouter} from "next/router";
 import MonthSelector from "components/monthSelector";
 import Header from "components/Header";
-import useSWR, {mutate} from "swr";
+import {useSWRInfinite} from "swr";
 import c from 'classnames';
 import {InlineFormInput} from "../components/InlineFormInput";
 
-function fetcher(...urls: string[]) {
-  const f = (u: string) => fetch(u).then((r) => r.json());
-  return Promise.all(urls.map(f));
+
+function useAsyncReference<T>(value: T): [React.MutableRefObject<T>, (newState: T) => void] {
+  const ref = useRef<T>(value);
+  const [, forceRender] = useState(false);
+
+  function updateState(newState: T) {
+    ref.current = newState;
+    forceRender(s => !s);
+  }
+
+  return [ref, updateState];
 }
 
+
 function Home() {
-  let [months, setMonths] = useState(["2021-06"]);
-  const {data: data} = useSWR(months.map((m) => `/api/summary/${m}`), fetcher);
+  let [months, setMonths] = useAsyncReference(["2021-06"]);
   const [session, loading] = useSession();
   const router = useRouter();
+
+  const getKey = useCallback((monthIndex: number) => {
+    console.log(months, monthIndex);
+    return `/api/summary/${months.current[monthIndex]}`;
+  }, [months]);
+
+  const {data, setSize, mutate: boundedMutate} = useSWRInfinite(getKey, {revalidateAll: true});
 
   if (loading) return null;
   if (!loading && !session) {
@@ -35,7 +50,7 @@ function Home() {
       headers: {'Content-Type': 'application/json'}
     });
 
-    await mutate(`/api/summary/${month}`);
+    boundedMutate().then();
   }
 
   return (
@@ -43,7 +58,10 @@ function Home() {
       <Header title="Home" menuItems={[
         {
           name: 'Add month',
-          onClick: () => setMonths([...months, "2021-03"])
+          onClick: () => {
+            setMonths([...months.current, '2021-06']);
+            setSize((size) => size + 1).then();
+          }
         }, 'divider', {
           name: 'Sign Out',
           icon: <LogoutIcon className="h-5 w-5 opacity-90"/>,
@@ -54,17 +72,21 @@ function Home() {
       <div className="overflow-x-auto w-full flex-grow">
         <div className="px-4 py-4 mt-6 sm:px-6 lg:px-8 mx-auto w-min">
           <div className="border border-gray-300 rounded-md overflow-hidden bg-white">
-            <div className={c("flex border-b border-gray-200", {"divide-x": months.length > 1})}>
+            <div className={c("flex border-b border-gray-200", {"divide-x": months.current.length > 1})}>
               <div className="w-52"/>
-              {months.map((month, i) => (
+              {months.current.map((month, i) => (
                 <div key={i} className="w-[calc(24rem+1px)] flex flex-col items-end p-4 relative">
                   {
-                    months.length > 1
+                    months.current.length > 1
                       ? <button
-                        onClick={() => {
-                          let _months = [...months];
+                        onClick={async () => {
+                          let _months = [...months.current];
                           _months.splice(i, 1);
                           setMonths(_months);
+                          let _data = [...(data ??[])];
+                          _data?.slice(i, 1)
+                          await boundedMutate(_data);
+                          // await setSize(_months.length).then();
                         }}
                         className="absolute left-5 top-5 rounded-full text-gray-400 hover:text-gray-600 hover:bg-gray-100 p-1 transition duration-100 focus:outline-none">
                         <XIcon className="w-5 h-5"/>
@@ -87,62 +109,62 @@ function Home() {
                       className="font-medium text-right text-xs text-gray-400 uppercase tracking-wider py-1.5 pr-4">BUDGETED
                     </div>
                     <div className="font-medium text-right text-gray-600">
-                      {formatNumber(data?.[i].state.budgeted || 0)}
+                      {formatNumber(data?.[i]?.state.budgeted || 0)}
                     </div>
 
                     <div
                       className="font-medium text-right text-xs text-gray-400 uppercase tracking-wider py-1.5 pr-4">Spent
                     </div>
                     <div className="font-medium text-right text-gray-600">
-                      {formatNumber(data?.[i].state.expense || 0)}
+                      {formatNumber(data?.[i]?.state.expense || 0)}
                     </div>
 
                     <div
                       className="font-medium text-right text-xs text-gray-400 uppercase tracking-wider py-1.5 pr-4">Balance
                     </div>
                     <div className="font-medium text-right text-gray-600">
-                      {formatNumber(data?.[i].state.balance || 0)}
+                      {formatNumber(data?.[i]?.state.balance || 0)}
                     </div>
                   </div>
                 </div>
               ))}
             </div>
             <div className="divide-y divide-gray-200">
-              {data && <div className={c("flex items-center", {"divide-x": months.length > 1})}>
+              {data && <div className={c("flex items-center", {"divide-x": months.current.length > 1})}>
                 <div className="w-52 px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Category
                 </div>
-                {months.map((month, i) => (
+                {months.current.map((month, i) => (
                   <div key={i} className="flex items-center">
                     <div className="w-32 px-4 py-3 text-right text-xs">
                       <span className="font-medium text-gray-500 uppercase tracking-wider">Budgeted</span>
                       <br/>
                       <span className="font-medium text-gray-700">
-                        {formatNumber(data?.[i].state.budgeted)}
+                        {formatNumber(data?.[i]?.state.budgeted)}
                       </span>
                     </div>
                     <div className="w-32 px-4 py-3 text-right text-xs">
                       <span className="font-medium text-gray-500 uppercase tracking-wider">Spent</span>
                       <br/>
                       <span className="font-medium text-gray-700">
-                        {formatNumber(data?.[i].state.expense)}
+                        {formatNumber(data?.[i]?.state.expense)}
                       </span>
                     </div>
                     <div className="w-32 px-4 py-3 text-right text-xs">
                       <span className="font-medium text-gray-500 uppercase tracking-wider">Balance</span>
                       <br/>
                       <span className="font-medium text-gray-700">
-                        {formatNumber(data?.[i].state.balance)}
+                        {formatNumber(data?.[i]?.state.balance)}
                       </span>
                     </div>
                   </div>
                 ))}
               </div>}
-              {data && data[0].categories.map((category: any, i: number) => (
+              {data && data[0]?.categories.map((category: any, i: number) => (
                 <Disclosure key={category._id} defaultOpen={true}>
                   {({open}) => (
                     <>
-                      <div className={c("flex items-center bg-gray-100", {"divide-x": months.length > 1})}>
+                      <div className={c("flex items-center bg-gray-100", {"divide-x": months.current.length > 1})}>
                         <div
                           className="flex items-center w-52 px-4 py-2 whitespace-nowrap text-sm text-gray-900 flex items-center">
                           <Disclosure.Button>
@@ -155,16 +177,16 @@ function Home() {
                           <span className="ml-2">{category.name}</span>
                         </div>
 
-                        {data.map((month, j) => (
+                        {months.current.map((month, j) => (
                           <div key={j} className="flex items-center">
                             <div className="w-32 px-4 py-2 whitespace-nowrap text-sm text-gray-500 text-right">
-                              {formatNumber(month.categories[i].state.budgeted)}
+                              {formatNumber(data[j]?.categories[i]?.state.budgeted)}
                             </div>
                             <div className="w-32 px-4 py-2 whitespace-nowrap text-sm text-gray-500 text-right">
-                              {formatNumber(month.categories[i].state.expense)}
+                              {formatNumber(data[j]?.categories[i]?.state.expense)}
                             </div>
                             <div className="w-32 px-4 py-2 whitespace-nowrap text-sm text-gray-500 text-right">
-                              {formatNumber(month.categories[i].state.balance)}
+                              {formatNumber(data[j]?.categories[i]?.state.balance)}
                             </div>
                           </div>
                         ))}
@@ -173,25 +195,25 @@ function Home() {
                       <Disclosure.Panel className="divide-y divide-gray-200">
                         {category.subCategories.map((subCategory: any, i2: number) => (
                           <div key={subCategory.name}
-                               className={c("flex items-center", {"divide-x": months.length > 1})}>
+                               className={c("flex items-center", {"divide-x": months.current.length > 1})}>
                             <div
                               className="w-52 pl-8 pr-4 py-2 whitespace-nowrap text-sm text-gray-900 flex items-center">
                               {subCategory.name}
                             </div>
-                            {data.map((month, j) => (
+                            {months.current.map((month, j) => (
                               <div key={j} className="flex items-center">
                                 <div className="w-32 px-3 py-2 whitespace-nowrap text-sm text-gray-500 text-right">
                                   <InlineFormInput
-                                    value={month.categories[i].subCategories[i2].state.budgeted}
+                                    value={data[j]?.categories[i].subCategories[i2].state.budgeted}
                                     render={(v) => formatNumber(v as number)}
-                                    onUpdate={(v) => updateBudget(v, category._id, subCategory.name, month.month)}
+                                    onUpdate={(v) => updateBudget(v, category._id, subCategory.name, month)}
                                   />
                                 </div>
                                 <div className="w-32 px-4 py-2 whitespace-nowrap text-sm text-gray-500 text-right">
-                                  {formatNumber(month.categories[i].subCategories[i2].state.expense)}
+                                  {formatNumber(data[j]?.categories[i].subCategories[i2].state.expense)}
                                 </div>
                                 <div className="w-32 px-4 py-2 whitespace-nowrap text-sm text-gray-500 text-right">
-                                  {formatNumber(month.categories[i].subCategories[i2].state.balance)}
+                                  {formatNumber(data[j]?.categories[i].subCategories[i2].state.balance)}
                                 </div>
                               </div>
                             ))}
